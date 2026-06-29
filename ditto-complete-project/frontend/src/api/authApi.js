@@ -1,0 +1,16 @@
+import axios from 'axios';
+const api = axios.create({ baseURL: '/api', withCredentials: true, headers: { 'Content-Type': 'application/json' } });
+api.interceptors.request.use(c => { const t = localStorage.getItem('ditto_token'); if (t) c.headers.Authorization = `Bearer ${t}`; return c; });
+export const register       = (name, email, password) => api.post('/auth/register', { name, email, password }).then(r => r.data);
+export const login          = (email, password) => api.post('/auth/login', { email, password }).then(r => r.data);
+export const verifyEmail    = token => api.get(`/auth/verify-email?token=${token}`).then(r => r.data);
+export const forgotPassword = email => api.post('/auth/forgot-password', { email }).then(r => r.data);
+export const resetPassword  = (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }).then(r => r.data);
+export const sharePoll      = (pollId, recipientEmail) => api.post(`/auth/polls/${pollId}/share`, { recipientEmail }).then(r => r.data);
+export const adminStats     = () => api.get('/admin/stats').then(r => r.data);
+export const adminUsers     = () => api.get('/admin/users').then(r => r.data);
+export const adminPolls     = () => api.get('/admin/polls').then(r => r.data);
+export const adminPromote   = id => api.patch(`/admin/users/${id}/promote`).then(r => r.data);
+export const adminDelete    = id => api.delete(`/admin/polls/${id}`).then(r => r.data);
+export const adminShare     = (id, email) => api.post(`/admin/polls/${id}/share`, { email }).then(r => r.data);
+export default api;

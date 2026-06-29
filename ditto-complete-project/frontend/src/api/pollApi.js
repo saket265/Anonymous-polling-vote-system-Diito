@@ -1,0 +1,12 @@
+import axios from 'axios';
+const api = axios.create({ baseURL: '/api', withCredentials: true, headers: { 'Content-Type': 'application/json' } });
+api.interceptors.request.use(c => { const t = localStorage.getItem('ditto_token'); if (t) c.headers.Authorization = `Bearer ${t}`; return c; });
+export const getAllPolls = () => api.get('/polls/all').then(r => r.data);
+export const getMyPolls = () => api.get('/polls/my').then(r => r.data);
+export const getPoll    = id => api.get(`/polls/${id}`).then(r => r.data);
+export const createPoll = (question, options, expiresInHours, ipCheck, trackParticipation) => api.post('/polls', { question, options, expiresInHours, ipCheck, trackParticipation }).then(r => r.data);
+export const castVote   = (pollId, optionId) => api.post(`/polls/${pollId}/vote`, { optionId }).then(r => r.data);
+export const exportPollResults = id => api.get(`/polls/${id}/export`).then(r => r.data);
+export const getParticipants = id => api.get(`/polls/${id}/participants`).then(r => r.data);
+export const exportParticipantsCSV = id => api.get(`/polls/${id}/participants/export`).then(r => r.data);
+export default api;
